@@ -47,7 +47,7 @@ class Status:
         for i in items:
             if cum_size >= t:
                 return int(price + d if side == "ask" else price - d)
-            price = i['price']
+            price = i["price"]
             cum_size += i["size"]
         # 最後までthresholdを満たさなかった場合、一番後ろの注文と同じ額
         return int(items[-1]["price"])
@@ -383,15 +383,30 @@ async def main(args):
 
 if __name__ == "__main__":
 
-    parser = ArgumentParser()
-    parser.add_argument("--api_key_json")
-    parser.add_argument("--symbol", default="FX_BTC_JPY")
-    parser.add_argument("--lot", default=0.01, type=float)
-    parser.add_argument("--t", default=0.03, type=float)
-    parser.add_argument("--d", default=1, type=int)
-    parser.add_argument("--s_entry", default=0.0004, type=float)
-    parser.add_argument("--s_update", default=0.0003, type=float)
-    parser.add_argument("--interval", default=5, type=int)
+    parser = ArgumentParser(description="pybotters x asyncio x magito MM")
+    parser.add_argument("--api_key_json", help="apiキーが入ったJSONファイル", required=True)
+    parser.add_argument("--symbol", default="FX_BTC_JPY", help="取引通過")
+    parser.add_argument("--lot", default=0.01, type=float, help="注文サイズ")
+    parser.add_argument(
+        "--t",
+        default=0.01,
+        type=float,
+        help="板上での累積注文量に対する閾値（この閾値を超えた時点での注文価格が参照価格となる）",
+    )
+    parser.add_argument("--d", default=1, type=int, help="参照価格と指値のマージン（指値＝参照価格±d）")
+    parser.add_argument(
+        "--s_entry",
+        default=0.0003,
+        type=float,
+        help="エントリー用のスプレッド閾値（スプレッドがこの閾値以上の時にマーケットメイキングを開始する）",
+    )
+    parser.add_argument(
+        "--s_update",
+        default=0.0001,
+        type=float,
+        help="指値更新用のスプレッド閾値（スプレッドがこの閾値以上の時に指値を更新する）",
+    )
+    parser.add_argument("--interval", default=5, type=int, help="マーケットメイキングサイクルの間隔")
 
     args = parser.parse_args()
 
